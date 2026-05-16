@@ -4,7 +4,8 @@ from dataclasses import dataclass
 class BackendConfig:
     broker_host: str = "localhost"
     broker_port: int = 1883
-    topic: str = "esl/tag/write"
+    payload_topic: str = "esl/tag/write"
+    ack_topic: str = "esl/tag/ack" 
     
     tag_id: int = 1
     title: str = "Milk 1L"

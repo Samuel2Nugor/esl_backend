@@ -1,5 +1,6 @@
 from config import BackendConfig
-from mqtt_publisher import MqttPublisher
+#from mqtt_publisher import publish_payload
+from ack_listener import listen_for_ack
 
 
 
@@ -7,17 +8,16 @@ from mqtt_publisher import MqttPublisher
 
 def main() -> None:
     config = BackendConfig()
-    
-    payload = {
+    listen_for_ack(config)
+    """payload = {
         "tagId": config.tag_id,
         "title": config.title,
         "finalPrice": config.final_price,
     }
+
+    publish_payload(config, payload)
     
-    publisher = MqttPublisher(config)
-    publisher.publish_payload(payload)
-    
-    print(f"Published payload to topic: {config.topic}")
+    print(f"Published payload to topic: {config.payload_topic}")"""
     
 
 if __name__ == "__main__":
