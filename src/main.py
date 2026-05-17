@@ -15,8 +15,11 @@ def main() -> None:
         raise ValueError("Invalid payload. Payload igored.")
     
     
-    save_command(payload)
-    publish_payload(config, payload)
+    command_id = save_command(payload)
+    
+    publish_payload(config, payload))
+    
+    update_command_status(command_id, "Published"
     
     print(f"Published payload to topic: {config.payload_topic}")
     
