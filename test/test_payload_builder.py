@@ -1,5 +1,5 @@
 from src.config import BackendConfig
-from src.payload import build_payload, validate_payload
+from src.payload import build_payload, validate_payload, validate_ack_payload
 
 def test_build_payload_returns_gateway_contract():
     config = BackendConfig()
@@ -36,3 +36,11 @@ def test_validate_payload_rejects_wrong_type():
     }
     
     assert validate_payload(payload) is False
+    
+def test_validate_ack_payload_accepts_validate_ack_string():
+    payload = {
+        "tagId": 1,
+        "ack": "true",
+    }
+    
+    assert validate_ack_payload(payload) is True

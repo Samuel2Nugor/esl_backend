@@ -27,3 +27,21 @@ def validate_payload(payload: dict) -> bool:
         
     return True
     
+def validate_ack_payload(payload: dict) -> bool:
+    required_fields = ["tagId", "ack"]
+    
+    for field in required_fields:
+        if field not in payload:
+            return False
+    
+    if not isinstance(payload["tagId"], int):
+        return False
+        
+    if not isinstance(payload["ack"], str):
+        return False
+        
+    if payload["ack"].lower() not in ("true", "false"):
+        return False
+    
+    return True
+    
