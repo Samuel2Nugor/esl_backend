@@ -13,6 +13,7 @@ def test_build_payload_returns_gateway_contract():
     
 def test_validate_payload_accepts_valid_payload():
     payload = {
+        "commandId": 1,
         "tagId": 1,
         "title": "Milk 1L",
         "finalPrice": 29.00,
@@ -22,6 +23,7 @@ def test_validate_payload_accepts_valid_payload():
     
 def test_validate_payload_rejects_missing_field():
     payload = {
+        "commandId": 1,
         "tagId": 1,
         "title": "Milk 1L",
     }
@@ -30,6 +32,7 @@ def test_validate_payload_rejects_missing_field():
     
 def test_validate_payload_rejects_wrong_type():
     payload = {
+        "commandId": 1,
         "tagId": "1",
         "title": 2,
         "finalPrice": 29.00,
@@ -37,8 +40,9 @@ def test_validate_payload_rejects_wrong_type():
     
     assert validate_payload(payload) is False
     
-def test_validate_ack_payload_accepts_validate_ack_string():
+def test_validate_ack_payload_accepts_command_id():
     payload = {
+        "commandId": 1,
         "tagId": 1,
         "ack": "true",
     }

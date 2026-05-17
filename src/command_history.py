@@ -50,5 +50,14 @@ def archive_command(command_id: int) -> bool:
             
     return False
     
+def mark_command_ack_received(command_id: int) -> bool:
+    command = get_command_by_id(command_id)
+    
+    if command is None:
+        return False
+        
+    command["status"] = "ack_received"
+    return True
+    
 def get_command_history() -> list[dict]:
     return COMMAND_HISTORY

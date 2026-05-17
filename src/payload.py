@@ -10,11 +10,14 @@ def build_payload(config: BackendConfig) -> dict:
     }
     
 def validate_payload(payload: dict) -> bool:
-    required_fields = ["tagId", "title", "finalPrice"]
+    required_fields = ["commandId", "tagId", "title", "finalPrice"]
     
     for field in required_fields:
         if field not in payload:
             return False
+            
+    if not isinstance(payload["commandId"], int):
+        return False
             
     if not isinstance(payload["tagId"], (int, str)):
         return False
@@ -28,11 +31,14 @@ def validate_payload(payload: dict) -> bool:
     return True
     
 def validate_ack_payload(payload: dict) -> bool:
-    required_fields = ["tagId", "ack"]
+    required_fields = ["commandId", "tagId", "ack"]
     
     for field in required_fields:
         if field not in payload:
             return False
+    
+    if not isinstance(payload["commandId"], int):
+        return False
     
     if not isinstance(payload["tagId"], int):
         return False

@@ -4,7 +4,8 @@ from src.command_history import (
     save_command,
     archive_command,
     get_command_by_id,
-    update_command_status
+    update_command_status,
+    mark_command_ack_received,
 )
 
 def test_save_command_adds_payload_to_history():
@@ -83,4 +84,27 @@ def test_archive_command_updates_status():
     
     assert archived is True
     assert command["status"] == "archived"
+
+def test_mark_command_ack_received_updates_exact_command():
+    COMMAND_HISTORY.clear()
     
+    payload = {
+        "tagId": 1,
+        "title": "Milk 1L",
+        "finalPrice": 29.00,
+    }
+    
+    command_id = save_command(payload)
+    
+    updated = mark_command_ack_received(command_id)
+    command = get_command_by_id(command_id)
+    
+    assert updated is True
+    assert command["status"] == "ack_received"
+    
+def test_mark_command_ack_received_returns_false_for_unknown_command():
+    COMMAND_HISTORY.clear()
+    
+    updated = mark_command_ack_received(999)
+    
+    assert updated is False
