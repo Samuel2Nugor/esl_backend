@@ -3,6 +3,7 @@ KNOWN_TAGS = {
         "name": "TG_01",
         "address": "74:4D:BD:63:C2:C6"
     }
+    
 }
 
 def is_known_tag(tag_id: int) -> bool:
