@@ -1,0 +1,97 @@
+from src.database import get_connection, _now
+
+def insert_command(payload: dict) -> int:
+    now = _now()
+    
+    with get_connection() as conn:
+        cursor = conn.execute(
+            """
+            INSERT INTO commands (
+                tag_id,
+                title,
+                final_price,
+                status,
+                created_at,
+                updated_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                payload["tagId"],
+                payload["title"],
+                payload["finalPrice"],
+                "created",
+                now,
+                now,
+            ),
+        )
+        
+        return cursor.lastrowid
+        
+def find_command_by_id(command_id: int) -> dict | None:
+    with get_connection() as conn:
+        conn.row_factory = None
+        cursor = conn.execute(
+            """
+            SELECT id, tag_id, title, final_price, status, created_at, updated_at
+            FROM commands
+            WHERE id = ?
+            """,
+            (command_id,),
+        )
+        
+        row = cursor.fetchone()
+    
+    if row is None:
+        return None
+        
+    return {
+        "command_id": row[0],
+        "tagId": row[1],
+        "title": row[2],
+        "finalPrice": row[3],
+        "status": row[4],
+        "created_at": row[5],
+        "updated_at": row[6],
+    }
+
+def update_command_status_by_id(command_id: int, status: str) -> bool:
+    now = _now()
+    
+    with get_connection() as conn:
+        cursor = conn.execute(
+            """
+            UPDATE commands
+            SET status = ?, updated_at = ?
+            WHERE id = ?
+            """,
+            (status, now, command_id),
+        )
+        
+        return cursor.rowcount == 1
+        
+def list_commands() -> list [dict]:
+    with get_connection() as conn:
+        cursor = conn.execute(
+            """
+            SELECT id, tag_id; title, final_price,status, created_at, updated_at
+            FROM commands
+            ORDER BY id DESC
+            """
+        )
+        
+        rows = cursor.fetchall()
+        
+    return [
+        {
+            "command_id": row[0],
+            "tagId": row[1],
+            "title": row[2],
+            "finalPrice": row[3],
+            "status": row[4],
+            "created_at": row[5],
+            "updated_at": row[6].
+        }
+        for row in rows
+    ]
+
