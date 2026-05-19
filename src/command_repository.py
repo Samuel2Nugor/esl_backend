@@ -1,5 +1,17 @@
 from src.database import get_connection, _now
 
+def _row_to_command(row) -> dict:
+    return {
+        "command_id": row[0],
+        "tagId": row[1],
+        "title": row[2],
+        "finalPrice": row[3],
+        "status": row[4],
+        "created_at": row[5],
+        "updated_at": row[6],
+    }
+    
+
 def insert_command(payload: dict) -> int:
     now = _now()
     
@@ -45,15 +57,7 @@ def find_command_by_id(command_id: int) -> dict | None:
     if row is None:
         return None
         
-    return {
-        "command_id": row[0],
-        "tagId": row[1],
-        "title": row[2],
-        "finalPrice": row[3],
-        "status": row[4],
-        "created_at": row[5],
-        "updated_at": row[6],
-    }
+    return _row_to_command(row)
 
 def update_command_status_by_id(command_id: int, status: str) -> bool:
     now = _now()
@@ -82,18 +86,7 @@ def list_commands() -> list [dict]:
         
         rows = cursor.fetchall()
         
-    return [
-        {
-            "command_id": row[0],
-            "tagId": row[1],
-            "title": row[2],
-            "finalPrice": row[3],
-            "status": row[4],
-            "created_at": row[5],
-            "updated_at": row[6],
-        }
-        for row in rows
-    ]
+    return [_row_to_command(row) for row in rows]
 
 def list_commands_by_status(status: str) -> list[dict]:
     with get_connection() as conn:
@@ -109,18 +102,7 @@ def list_commands_by_status(status: str) -> list[dict]:
         
         rows = cursor.fetchall()
         
-    return [
-        {
-            "command_id": row[0],
-            "tagId": row[1],
-            "title": row[2],
-            "finalPrice": row[3],
-            "status": row[4],
-            "created_at": row[5],
-            "updated_at": row[6],
-        }
-        for row in rows
-    ]
+    return [_row_to_command(row) for row in rows]
     
 def list_commands_by_tag(tag_id: int) -> list[dict]:
     with get_connection() as conn:
@@ -135,17 +117,6 @@ def list_commands_by_tag(tag_id: int) -> list[dict]:
         )
         rows = cursor.fetchall()
         
-    return [
-        {
-            "command_id": row[0],
-            "tagId": row[1],
-            "title": row[2],
-            "finalPrice": row[3],
-            "status": row[4],
-            "created_at": row[5],
-            "updated_at": row[6],
-        }
-        for row in rows
-    ]
+    return [_row_to_command(row) for row in rows]
     
             
