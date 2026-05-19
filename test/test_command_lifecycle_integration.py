@@ -5,6 +5,7 @@ from src.command_history import(
     update_command_status,
     mark_command_ack_received,
 )
+from src.command_monitor import check_stale_commands
 from src.database import get_connection, init_db
 
 def setup_functon():
@@ -50,4 +51,23 @@ def test_command_lifecycle_then_ack_received():
     assert acked is True
     assert command["status"] == "ack_received"
     assert command["retry_count"] == 0
+    
+def test_command_monitor_marks_stale_commands_failed():
+    payload = {
+        "tagId": 1,
+        "title": "Milk 1L",
+        "finalPrice": 29.00,
+    }
+    
+    command_id = save_command(payload)
+    
+    update_command_status(command_id, "published")
+    
+    updated_count = check_stale_commands(timeout_seconds=0)
+    
+    command = get_command_by_id(command_id)
+    
+    assert updated_count == 1
+    assert command["status"] == "failed"
+    assert command["retry_count"] == 1
     
