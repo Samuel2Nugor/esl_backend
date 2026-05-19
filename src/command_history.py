@@ -1,4 +1,4 @@
-import src.command_repository as repo
+import src.repositories.command_repository as repo
 
 ALLOWED_STATUSES = {
     "created",
