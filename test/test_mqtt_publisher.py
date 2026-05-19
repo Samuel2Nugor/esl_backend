@@ -1,5 +1,5 @@
 from src.config import BackendConfig
-from src.mqtt_publisher import publish_payload
+from src.mqtt.mqtt_publisher import publish_payload
 
 def test_publish_payload_function_exists():
     config = BackendConfig()
