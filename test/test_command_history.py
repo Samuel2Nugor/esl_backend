@@ -7,6 +7,8 @@ from src.command_history import (
     list_commands,
     list_commands_by_status,
     list_commands_by_tag,
+    list_stale_published_commands,
+    mark_stale_commands_failed
 )
 
 from src.database import init_db, get_connection
@@ -180,3 +182,36 @@ def test_list_commands_by_tag_returns_only_matching_tag():
     
     assert command_id_1 in command_ids
     assert command_id_2 not in command_ids
+    
+def test_list_stale_published_commands_returns_published_commands():
+    payload = {
+        "tagId": 1,
+        "title": "Milk 1L",
+        "finalPrice": 29.00,
+    }
+    
+    command_id = save_command(payload)
+    update_command_status(command_id, "published")
+    
+    stale_commands = list_stale_published_commands(0)
+    
+    command_ids = [ command["command_id"] for command in stale_commands]
+    
+    assert command_id in command_ids
+    
+def test_mark_stale_commands_failed_updates_status():
+    payload = {
+        "tagId": 1,
+        "title": "Orange juice 1L",
+        "finalPrice": 18.00,
+    }
+    
+    command_id = save_command(payload)
+    update_command_status(command_id, "published")
+    
+    updated_count = ( mark_stale_commands_failed(0))
+    
+    command = get_command_by_id(command_id)
+    
+    assert updated_count == 1
+    assert command["status"] == "failed"

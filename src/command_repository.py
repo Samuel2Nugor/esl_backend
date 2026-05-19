@@ -1,5 +1,8 @@
+from datetime import datetime
 from src.database import get_connection, _now
 
+
+# row helper
 def _row_to_command(row) -> dict:
     return {
         "command_id": row[0],
@@ -11,7 +14,7 @@ def _row_to_command(row) -> dict:
         "updated_at": row[6],
     }
     
-
+# SQL command functions
 def insert_command(payload: dict) -> int:
     now = _now()
     
@@ -118,5 +121,29 @@ def list_commands_by_tag(tag_id: int) -> list[dict]:
         rows = cursor.fetchall()
         
     return [_row_to_command(row) for row in rows]
+
+def list_stale_published_commands(timeout_seconds: int) -> list[dict]:
+    with get_connection() as conn:
+        cursor = conn.execute(
+            """
+            SELECT id, tag_id, title, final_price, status, created_at, updated_at
+            FROM commands
+            WHERE status = 'published'
+            """
+        )
+        
+        rows = cursor.fetchall()
     
+    stale_commands = []
+    
+    now = datetime.now()
+    
+    for row in rows:
+        updated_at = datetime.fromisoformat(row[6])
+        
+        age_seconds = (now - updated_at).total_seconds()
+        if age_seconds >= timeout_seconds:
+            stale_commands.append(_row_to_command(row))
+            
+    return stale_commands
             

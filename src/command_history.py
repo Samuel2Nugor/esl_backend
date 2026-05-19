@@ -36,3 +36,24 @@ def list_commands_by_status(status: str) -> list[dict]:
 
 def list_commands_by_tag(tag_id: int) -> list[dict]:
     return repo.list_commands_by_tag(tag_id)
+    
+def list_stale_published_commands(timeout_seconds: int) -> list[dict]:
+    return repo.list_stale_published_commands(timeout_seconds)
+    
+def mark_stale_commands_failed(timeout_seconds: int) -> int:
+    stale_commands = (
+        list_stale_published_commands(timeout_seconds)
+    )
+    
+    updated_count = 0
+    
+    for command in stale_commands:
+        updated = update_command_status(
+            command["command_id"], "failed"
+        )
+        
+        if updated:
+            updated_count += 1
+            
+    return updated_count
+        
