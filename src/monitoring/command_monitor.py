@@ -1,6 +1,6 @@
 import time
 
-from src.command_history import mark_stale_commands_failed
+from src.services.command_history import mark_stale_commands_failed
 
 def check_stale_commands(timeout_seconds: int=30) -> int:
     return mark_stale_commands_failed(timeout_seconds)

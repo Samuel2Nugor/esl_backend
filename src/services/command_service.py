@@ -1,4 +1,4 @@
-from src.command_history import save_command, update_command_status
+from src.services.command_history import save_command, update_command_status
 from src.config import BackendConfig
 from src.database import init_db
 from src.mqtt.mqtt_publisher import publish_payload
