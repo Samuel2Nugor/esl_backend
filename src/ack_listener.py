@@ -58,3 +58,8 @@ def listen_for_ack(config: BackendConfig) -> None:
     
     print("Waiting for ACK messages...")
     client.loop_forever()
+    
+if __name__ == "__main__":
+    config = BackendConfig()
+    listen_for_ack(config)
+    
