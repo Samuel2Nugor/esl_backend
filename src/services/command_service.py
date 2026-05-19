@@ -2,7 +2,7 @@ from src.command_history import save_command, update_command_status
 from src.config import BackendConfig
 from src.database import init_db
 from src.mqtt.mqtt_publisher import publish_payload
-from src.payload import build_payload, validate_payload
+from src.contracts.payload import build_payload, validate_payload
 from src.tag_registry import is_known_tag
 
 def publish_manual_command() -> int | None:

@@ -1,5 +1,5 @@
 from src.config import BackendConfig
-from src.payload import build_payload, validate_payload, validate_ack_payload
+from src.contracts.payload import build_payload, validate_payload, validate_ack_payload
 
 def test_build_payload_returns_gateway_contract():
     config = BackendConfig()

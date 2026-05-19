@@ -3,7 +3,7 @@ import paho.mqtt.client as mqtt
 
 from src.config import BackendConfig
 from src.command_history import mark_command_ack_received, update_command_status
-from src.payload import validate_ack_payload
+from src.contracts.payload import validate_ack_payload
 
 def listen_for_ack(config: BackendConfig) -> None:
     def on_connect(client, userdata, flags, rc, properties=None) -> None:
