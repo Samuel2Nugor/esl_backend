@@ -10,8 +10,9 @@ def _row_to_command(row) -> dict:
         "title": row[2],
         "finalPrice": row[3],
         "status": row[4],
-        "created_at": row[5],
-        "updated_at": row[6],
+        "retry_count": row[5],
+        "created_at": row[6],
+        "updated_at": row[7],
     }
     
 # SQL command functions
@@ -26,16 +27,18 @@ def insert_command(payload: dict) -> int:
                 title,
                 final_price,
                 status,
+                retry_count,
                 created_at,
                 updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 payload["tagId"],
                 payload["title"],
                 payload["finalPrice"],
                 "created",
+                0,
                 now,
                 now,
             ),
@@ -48,7 +51,7 @@ def find_command_by_id(command_id: int) -> dict | None:
         conn.row_factory = None
         cursor = conn.execute(
             """
-            SELECT id, tag_id, title, final_price, status, created_at, updated_at
+            SELECT id, tag_id, title, final_price, status, retry_count, created_at, updated_at
             FROM commands
             WHERE id = ?
             """,
@@ -81,7 +84,7 @@ def list_commands() -> list [dict]:
     with get_connection() as conn:
         cursor = conn.execute(
             """
-            SELECT id, tag_id, title, final_price,status, created_at, updated_at
+            SELECT id, tag_id, title, final_price,status, retry_count, created_at, updated_at
             FROM commands
             ORDER BY id DESC
             """
@@ -95,7 +98,7 @@ def list_commands_by_status(status: str) -> list[dict]:
     with get_connection() as conn:
         cursor = conn.execute(
             """
-            SELECT id, tag_id, title, final_price, status, created_at, updated_at
+            SELECT id, tag_id, title, final_price, status, retry_count, created_at, updated_at
             FROM commands
             WHERE status = ?
             ORDER BY id DESC
@@ -111,7 +114,7 @@ def list_commands_by_tag(tag_id: int) -> list[dict]:
     with get_connection() as conn:
         cursor = conn.execute(
             """
-            SELECT id, tag_id, title, final_price, status, created_at, updated_at
+            SELECT id, tag_id, title, final_price, status, retry_count, created_at, updated_at
             FROM commands
             WHERE tag_id = ?
             ORDER BY id DESC
@@ -122,11 +125,13 @@ def list_commands_by_tag(tag_id: int) -> list[dict]:
         
     return [_row_to_command(row) for row in rows]
 
+# failed commands logic
+
 def list_stale_published_commands(timeout_seconds: int) -> list[dict]:
     with get_connection() as conn:
         cursor = conn.execute(
             """
-            SELECT id, tag_id, title, final_price, status, created_at, updated_at
+            SELECT id, tag_id, title, final_price, status, retry_count, created_at, updated_at
             FROM commands
             WHERE status = 'published'
             """
@@ -147,3 +152,17 @@ def list_stale_published_commands(timeout_seconds: int) -> list[dict]:
             
     return stale_commands
             
+# Retry commands logic
+
+def increment_retry_count(command_id: int) -> bool:
+    with get_connection() as conn:
+        cursor = conn.execute(
+            """
+            UPDATE commands
+            SET retry_count = retry_count + 1, updated_at = ?
+            WHERE id = ?
+            """,
+            (_now(), command_id)
+        )
+        
+        return cursor.rowcount == 1

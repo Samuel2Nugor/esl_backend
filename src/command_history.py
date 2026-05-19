@@ -8,6 +8,7 @@ ALLOWED_STATUSES = {
     "archived",
 }
 
+
 def save_command(payload: dict) -> int:
     return repo.insert_command(payload)
     
@@ -48,6 +49,9 @@ def mark_stale_commands_failed(timeout_seconds: int) -> int:
     updated_count = 0
     
     for command in stale_commands:
+        
+        increment_retry_count(command["command_id"])
+        
         updated = update_command_status(
             command["command_id"], "failed"
         )
@@ -56,4 +60,7 @@ def mark_stale_commands_failed(timeout_seconds: int) -> int:
             updated_count += 1
             
     return updated_count
+    
+def increment_retry_count(command_id: int) -> bool:
+    return repo.increment_retry_count(command_id)
         

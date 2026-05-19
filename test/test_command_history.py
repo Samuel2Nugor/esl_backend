@@ -8,7 +8,8 @@ from src.command_history import (
     list_commands_by_status,
     list_commands_by_tag,
     list_stale_published_commands,
-    mark_stale_commands_failed
+    mark_stale_commands_failed,
+    increment_retry_count,
 )
 
 from src.database import init_db, get_connection
@@ -199,7 +200,7 @@ def test_list_stale_published_commands_returns_published_commands():
     
     assert command_id in command_ids
     
-def test_mark_stale_commands_failed_updates_status():
+def test_mark_stale_commands_failed():
     payload = {
         "tagId": 1,
         "title": "Orange juice 1L",
@@ -209,9 +210,38 @@ def test_mark_stale_commands_failed_updates_status():
     command_id = save_command(payload)
     update_command_status(command_id, "published")
     
-    updated_count = ( mark_stale_commands_failed(0))
+    updated_count = mark_stale_commands_failed(0)
     
     command = get_command_by_id(command_id)
     
     assert updated_count == 1
     assert command["status"] == "failed"
+    assert command["retry_count"] == 1
+    
+def test_save_command_sets_retry_count_to_zero():
+    payload = {
+        "tagId": 1,
+        "title": "Milk 1L",
+        "finalPrice": 29.00,
+    }
+    
+    command_id = save_command(payload)
+    
+    command = get_command_by_id(command_id)
+    
+    assert command["retry_count"] == 0
+    
+def test_increment_retry_count_updates_value():
+    payload = {
+        "tagId": 1,
+        "title": "Milk 1L",
+        "finalPrice": 29.00,
+    }
+    
+    command_id = save_command(payload)
+    increment_retry_count(command_id)
+    
+    command = get_command_by_id(command_id)
+    
+    assert command["retry_count"] == 1
+    
