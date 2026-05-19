@@ -1,4 +1,4 @@
-from src.database import init_db
+from src.db.database import init_db
 
 
 

@@ -12,7 +12,7 @@ from src.services.command_history import (
     increment_retry_count,
 )
 
-from src.database import init_db, get_connection
+from src.db.database import init_db, get_connection
 
 #----------- TEST-------------#
 

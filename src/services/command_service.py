@@ -1,6 +1,6 @@
 from src.services.command_history import save_command, update_command_status
 from src.config import BackendConfig
-from src.database import init_db
+from src.db.database import init_db
 from src.mqtt.mqtt_publisher import publish_payload
 from src.contracts.payload import build_payload, validate_payload
 from src.services.tag_registry import is_known_tag

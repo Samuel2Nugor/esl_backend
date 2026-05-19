@@ -6,7 +6,7 @@ from src.services.command_history import(
     mark_command_ack_received,
 )
 from src.monitoring.command_monitor import check_stale_commands
-from src.database import get_connection, init_db
+from src.db.database import get_connection, init_db
 
 def setup_functon():
     init_db()

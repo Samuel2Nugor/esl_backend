@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.database import get_connection, _now
+from src.db.database import get_connection, _now
 
 
 # row helper
