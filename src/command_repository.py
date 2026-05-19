@@ -74,7 +74,7 @@ def list_commands() -> list [dict]:
     with get_connection() as conn:
         cursor = conn.execute(
             """
-            SELECT id, tag_id; title, final_price,status, created_at, updated_at
+            SELECT id, tag_id, title, final_price,status, created_at, updated_at
             FROM commands
             ORDER BY id DESC
             """
@@ -90,8 +90,62 @@ def list_commands() -> list [dict]:
             "finalPrice": row[3],
             "status": row[4],
             "created_at": row[5],
-            "updated_at": row[6].
+            "updated_at": row[6],
         }
         for row in rows
     ]
 
+def list_commands_by_status(status: str) -> list[dict]:
+    with get_connection() as conn:
+        cursor = conn.execute(
+            """
+            SELECT id, tag_id, title, final_price, status, created_at, updated_at
+            FROM commands
+            WHERE status = ?
+            ORDER BY id DESC
+            """,
+            (status,),
+        )
+        
+        rows = cursor.fetchall()
+        
+    return [
+        {
+            "command_id": row[0],
+            "tagId": row[1],
+            "title": row[2],
+            "finalPrice": row[3],
+            "status": row[4],
+            "created_at": row[5],
+            "updated_at": row[6],
+        }
+        for row in rows
+    ]
+    
+def list_commands_by_tag(tag_id: int) -> list[dict]:
+    with get_connection() as conn:
+        cursor = conn.execute(
+            """
+            SELECT id, tag_id, title, final_price, status, created_at, updated_at
+            FROM commands
+            WHERE tag_id = ?
+            ORDER BY id DESC
+            """,
+            (tag_id,),
+        )
+        rows = cursor.fetchall()
+        
+    return [
+        {
+            "command_id": row[0],
+            "tagId": row[1],
+            "title": row[2],
+            "finalPrice": row[3],
+            "status": row[4],
+            "created_at": row[5],
+            "updated_at": row[6],
+        }
+        for row in rows
+    ]
+    
+            

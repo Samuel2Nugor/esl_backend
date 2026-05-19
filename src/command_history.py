@@ -2,7 +2,9 @@ from src.command_repository import (
     insert_command, 
     find_command_by_id,
     update_command_status_by_id,
-    list_command as repo_list_commands,
+    list_commands as repo_list_commands,
+    list_commands_by_status as repo_list_commands_by_status,
+    list_commands_by_tag as repo_list_commands_by_tag,
 )
 
 ALLOWED_STATUSES = {
@@ -33,5 +35,11 @@ def archive_command(command_id: int) -> bool:
 def mark_command_ack_received(command_id: int) -> bool:
     return update_command_status(command_id, "ack_received")
     
-def list_command() -> list[dict]:
+def list_commands() -> list[dict]:
     return repo_list_commands()
+    
+def list_commands_by_status(status: str) -> list[dict]:
+    return repo_list_commands_by_status(status)
+
+def list_commands_by_tag(tag_id: int) -> list[dict]:
+    return repo_list_commands_by_tag(tag_id)

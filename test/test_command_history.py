@@ -4,8 +4,14 @@ from src.command_history import (
     get_command_by_id,
     update_command_status,
     mark_command_ack_received,
+    list_commands,
+    list_commands_by_status,
+    list_commands_by_tag,
 )
+
 from src.database import init_db, get_connection
+
+#----------- TEST-------------#
 
 def setup_function():
     init_db()
@@ -103,3 +109,74 @@ def test_mark_command_ack_received_returns_false_for_unknown_command():
     updated = mark_command_ack_received(999)
     
     assert updated is False
+    
+def test_list_commands_returns_saved_commands():
+    payload_1 = {
+        "tagId": 1,
+        "title": "Bread",
+        "finalPrice": 29.00,
+    }
+    
+    payload_2 = {
+        "tagId": 1,
+        "title": "Bread",
+        "finalPrice": 29.00,
+    }
+    
+    command_id_1 = save_command(payload_1)
+    command_id_2 = save_command(payload_2)
+    
+    commands = list_commands()
+    
+    command_ids = [command["command_id"] for command in commands]
+    
+    assert command_id_1 in command_ids
+    assert command_id_2 in command_ids
+    
+def test_list_commands_by_status_return_only_matching_status():
+    payload_1 = {
+        "tagId": 1,
+        "title": "Milk 1L",
+        "finalPrice": 29.00,
+    }
+    
+    payload_2 = {
+        "tagId": 1,
+        "title": "Bread",
+        "finalPrice": 19.00,
+    }
+    
+    command_id_1 = save_command(payload_1)
+    command_id_2 = save_command(payload_2)
+    
+    update_command_status(command_id_1, "published")
+    
+    published_commands = list_commands_by_status("published")
+    
+    command_ids = [command["command_id"] for command in published_commands]
+    
+    assert command_id_1 in command_ids
+    assert command_id_2 not in command_ids
+    
+def test_list_commands_by_tag_returns_only_matching_tag():
+    payload_1 = {
+        "tagId": 1,
+        "title": "Milk 1L",
+        "finalPrice": 29.00,
+    }
+    
+    payload_2 = {
+        "tagId": 2,
+        "title": "Bread",
+        "finalPrice": 19.00,
+    }
+    
+    command_id_1 = save_command(payload_1)
+    command_id_2 = save_command(payload_2)
+    
+    tag_1_commands = list_commands_by_tag(1)
+    
+    command_ids = [command["command_id"] for command in tag_1_commands]
+    
+    assert command_id_1 in command_ids
+    assert command_id_2 not in command_ids
