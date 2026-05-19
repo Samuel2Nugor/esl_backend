@@ -7,6 +7,6 @@ class BackendConfig:
     payload_topic: str = "esl/tag/write"
     ack_topic: str = "esl/tag/ack" 
     
-    tag_id: int = 999
+    tag_id: int = 1
     title: str = "Milk 1L"
     final_price: float = 29.00

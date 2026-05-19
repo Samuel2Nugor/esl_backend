@@ -1,28 +1,13 @@
-from src.command_history import save_command, update_command_status
 from src.config import BackendConfig
-from src.database import init_db
-from src.mqtt_publisher import publish_payload
-from src.payload import build_payload, validate_payload
-from src.tag_registry import is_known_tag
+from src.services.command_service import publish_manual_command
 
 def main() -> None:
-    init_db()
+    command_id = publish_manual_command()
     
-    config = BackendConfig()
-    payload = build_payload(config)
-    
-    if not is_known_tag(payload["tagId"]):
-        print(f"Unknown tagId: {payload['tagId']}. Payload was not published.")
+    if command_id is None:
         return
     
-    command_id = save_command(payload)
-    payload["commandId"] = command_id
-    
-    if not validate_payload(payload):
-        raise ValueError("Invalid payload: Payload was not published.")
-        
-    publish_payload(config, payload)
-    update_command_status(command_id, "published")
+    config = BackendConfig()
     
     print(f"Published commandId={command_id} to topic: {config.payload_topic}")
     
