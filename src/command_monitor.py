@@ -5,7 +5,7 @@ from src.command_history import mark_stale_commands_failed
 def check_stale_commands(timeout_seconds: int=30) -> int:
     return mark_stale_commands_failed(timeout_seconds)
 
-def run_command_monitor(timeout_seconds: int=30, interval_seconds: int=5,) -> None:
+def run_command_monitor(timeout_seconds: int=10, interval_seconds: int=3,) -> None:
     print("Command monitor started")
     
     while True:

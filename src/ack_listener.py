@@ -2,7 +2,7 @@ import json
 import paho.mqtt.client as mqtt
 
 from src.config import BackendConfig
-from src.command_history import mark_command_ack_received
+from src.command_history import mark_command_ack_received, update_command_status
 from src.payload import validate_ack_payload
 
 def listen_for_ack(config: BackendConfig) -> None:
@@ -29,13 +29,20 @@ def listen_for_ack(config: BackendConfig) -> None:
             
             if ack.lower() == "true":
                 updated = mark_command_ack_received(command_id)
-                
-                if updated:
-                    print(f"Command {command_id} marked as ack_received")
-                else:
-                    print(f"No command found with commandId {command_id}")
             
-            print("ACK received:")
+            elif ack.lower() == "false":
+                updated = update_command_status(command_id, "failed")
+            
+            else:
+                print(f"Unknown ACK value: {ack}")
+                return
+                
+            if updated:
+                print(f"Command {command_id} updated from ACK {ack}")
+            else:
+                print(f"No command found with commandId {command_id}")
+            
+            print("ACK message received:")
             print(f"   commandId: {command_id}")
             print(f"   topic: {msg.topic}")
             print(f"   tagId: {tag_id}")
