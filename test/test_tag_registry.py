@@ -1,4 +1,4 @@
-from src.tag_registry import get_tag_address, is_known_tag
+from src.services.tag_registry import get_tag_address, is_known_tag
 
 
 def test_known_tag_returns_true():
