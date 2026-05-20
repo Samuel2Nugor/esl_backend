@@ -1,6 +1,7 @@
 from src.services.tag_registry import get_tag_address, is_known_tag, list_tags, get_tag
 
 
+
 def test_known_tag_returns_true():
     assert is_known_tag(1) is True
     
@@ -35,3 +36,5 @@ def test_get_tag_return_known_tag():
     
 def test_get_tag_returns_none_for_unknown_tag():
     assert get_tag(3000) is None
+
+

@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from src.db.database import get_connection, init_db
-
+from unittest.mock import patch
 from src.api.app import app
 
 
@@ -56,14 +56,15 @@ def test_get_commands_returns_empty_list_when_no_commands():
     assert response.json() == []
     
 def test_post_commands_creates_commands():
-    response = client.post(
-        "/commands",
-        json={
-            "tagId": 1,
-            "title":"Coffee",
-            "finalPrice": 39.00,
-        },
-    )
+    with patch("src.services.command_service.publish_payload"):
+        response = client.post(
+            "/commands",
+            json={
+                "tagId": 1,
+                "title":"Coffee",
+                "finalPrice": 39.00,
+            },
+        )
     
     assert response.status_code == 200
     
@@ -73,14 +74,15 @@ def test_post_commands_creates_commands():
     assert isinstance(data["commandId"], int)
     
 def test_get_single_command_returns_command():
-    create_response = client.post(
-        "/commands",
-        json={
-            "tagId": 1,
-            "title":"Milk 1L",
-            "finalPrice": 29.00,
-        },
-    )
+    with patch("src.services.command_service.publish_payload"):
+        create_response = client.post(
+            "/commands",
+            json={
+                "tagId": 1,
+                "title":"Milk 1L",
+                "finalPrice": 29.00,
+            },
+        )
     
     command_id = create_response.json()["commandId"]
     response = client.get(f"/commands/{command_id}")
@@ -95,14 +97,15 @@ def test_get_single_command_returns_command():
     assert data["finalPrice"] == 29.00
     
 def test_patch_command_updates_status():
-    create_response = client.post(
-        "/commands",
-        json={
-            "tagId": 1,
-            "title": "Coffee",
-            "finalPrice": 39.00,
-        },
-    )
+    with patch("src.services.command_service.publish_payload"):
+        create_response = client.post(
+            "/commands",
+            json={
+                "tagId": 1,
+                "title": "Coffee",
+                "finalPrice": 39.00,
+            },
+        )
 
     command_id = create_response.json()["commandId"]
 
@@ -122,14 +125,15 @@ def test_patch_command_updates_status():
 
 
 def test_delete_command_archives_command():
-    create_response = client.post(
-        "/commands",
-        json={
-            "tagId": 1,
-            "title": "Coffee",
-            "finalPrice": 39.00,
-        },
-    )
+    with patch("src.services.command_service.publish_payload"):
+        create_response = client.post(
+            "/commands",
+            json={
+                "tagId": 1,
+                "title": "Coffee",
+                "finalPrice": 39.00,
+            },
+        )
 
     command_id = create_response.json()["commandId"]
 
@@ -141,3 +145,4 @@ def test_delete_command_archives_command():
 
     assert data["status"] == "archived"
     assert data["command"]["status"] == "archived"
+    
