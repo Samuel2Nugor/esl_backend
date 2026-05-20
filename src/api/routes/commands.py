@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from src.api.models.command_request import CommandRequest
 from src.api.models.command_update_request import CommandUpdateRequest
 from src.services.command_service import publish_command
-from src.services.command_history import list_commands, get_command_by_id, update_command_status
+from src.services.command_history import list_commands, get_command_by_id, update_command_status, archive_command
 
 router = APIRouter()
 
@@ -64,3 +64,23 @@ def update_command(command_id: int, request: CommandUpdateRequest,) -> dict:
         "status": "updated",
         "command": command,
     }
+    
+#------------DELETE (soft delete)----------#
+
+@router.delete("/commands/{command_id}")
+def delete_command(command_id: int) -> dict:
+    archived = archive_command(command_id)
+    
+    if not archived:
+        raise HTTPException(
+            status_code=404,
+            detail="Command not found",
+        )
+    
+    command = get_command_by_id(command_id)
+    
+    return {
+        "status": "archived",
+        "command": command,
+    }
+    
