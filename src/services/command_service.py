@@ -5,6 +5,11 @@ from src.contracts.payload import build_payload, validate_payload
 from src.services.tag_registry import is_known_tag
 from src.queue.command_queue import enqueue_command
 
+# TODO:
+# publish_command currently handles multiple responsibilities:
+# validation, persistence, queueing, publishing and status updates.
+# Consider splitting later if complexity grows
+
 def publish_command(payload: dict) -> int | None:    
     config = BackendConfig()
     
