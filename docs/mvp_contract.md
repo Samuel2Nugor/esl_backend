@@ -2,9 +2,17 @@
 
 ## Purpose
 
-This document defines the minimum contract between the backend, MQTT broker, gateway, and BLE tag.
+This document defines the minimum contract between:
+
+- Frontend
+- Backend API
+- MQTT broker
+- Gateway
+- BLE tags
 
 The goal is to keep the MVP focused and avoid adding extra features before the core flow is stable.
+
+---
 
 ## MVP System Flow
 
@@ -26,119 +34,199 @@ Backend ACK listener
         ↓
 Backend database
 
-## MQTT Topics
+----
 
-### Backend to Gateway
+## Backend API Routes
 
-- esl/tag/write
+### Health
 
-Used when the backen sends a command to update a tag
+```text
+GET /health
+```
 
-### Gateway to Backend Architecture
+---
 
-- esl/tag/ack
+### Commands
 
-Used when the gateway reports whether the tag update succeeded or failed
-
-
-## Command Payload
-
-```json
-       ```
-{
-  "commandId": 1,
-  "tagId": 1,
-  "title": "Milk 1L",
-  "finalPrice": 29.00
-}
-
-### Fields
-
-commandId   Backend command identifier
-tagId       Logical tag identifier
-title       Product/title text displayed on tag
-finalPrice  Price displayed on tag
-
-## ACK Payload 
-
-### Success
-
-```json
-       ```
-{
-  "commandId": 1,
-  "tagId": 1,
-  "ack": "true"
-}
-
-### Failure
-
-```json
-       ```
-{
-  "commandId": 1,
-  "tagId": 1,
-  "ack": "false",
-  "reason": "tag_not_found"
-}
-
-
-## Backend API MVP
-
-GET    /health
-
+```text
 POST   /commands
 GET    /commands
 GET    /commands/{command_id}
 PATCH  /commands/{command_id}
 DELETE /commands/{command_id}
+```
 
+Request:
+
+```json
+{
+    "tagId": 1,
+    "title": "Milk 1L",
+    "finalPrice": 29.0
+}
+```
+
+---
+
+### Products
+
+```text
+POST   /products
+GET    /products
+GET    /products/{product_id}
+PATCH  /products/{product_id}
+DELETE /products/{product_id}
+```
+
+Request:
+
+```json
+{
+    "sku":"MILK001",
+    "name":"Milk 1L",
+    "price":29.0
+}
+```
+
+---
+
+### Tags
+
+```text
+POST   /tags
 GET    /tags
 GET    /tags/{tag_id}
+PATCH  /tags/{tag_id}
+DELETE /tags/{tag_id}
+```
 
-## Command Lifecycle
+Request:
 
-created
-↓
-published
-↓
-ack_received
+```json
+{
+    "name":"TG_01",
+    "ble_address":"74:4D:BD:63:C2:C6",
+    "status":"available"
+}
+```
 
-or
+---
 
-published
-↓
-failed
+### Shelf Locations
 
-or
+```text
+POST   /shelf-locations
+GET    /shelf-locations
+GET    /shelf-locations/{location_id}
+PATCH  /shelf-locations/{location_id}
+DELETE /shelf-locations/{location_id}
+```
 
-archived
+Request:
 
+```json
+{
+    "name":"Dairy A1",
+    "description":"Milk shelf"
+}
+```
+
+---
+
+### Assignments
+
+```text
+POST   /assignments
+GET    /assignments
+GET    /assignments/{assignment_id}
+PATCH  /assignments/{assignment_id}
+DELETE /assignments/{assignment_id}
+```
+
+Request:
+
+```json
+{
+    "product_id":1,
+    "tag_id":1,
+    "shelf_location_id":1
+}
+```
+
+---
+
+## MQTT Topics
+
+Backend → Gateway
+
+```text
+esl/tag/write
+```
+
+Gateway → Backend
+
+```text
+esl/tag/ack
+```
+
+Command payload:
+
+```json
+{
+    "commandId":1,
+    "tagId":1,
+    "title":"Milk 1L",
+    "finalPrice":29.0
+}
+```
+
+ACK:
+
+```json
+{
+    "commandId":1,
+    "tagId":1,
+    "ack":"true"
+}
+```
+
+Failure ACK:
+
+```json
+{
+    "commandId":1,
+    "tagId":1,
+    "ack":"false",
+    "reason":"tag_not_found"
+}
+```
+
+---
 
 ## MVP Boundaries
 
-- command creation
-- command listing
-- command lookup
-- command status update
-- command archiving
-- tag listing
-- tag lookup
-- MQTT publish
+Included:
+
+- commands
+- products
+- tags
+- shelf locations
+- assignments
+- MQTT
+- SQLite
 - ACK handling
-- SQLite persistence
 
-#### Not include yet
+Not included:
 
-- WebSockets
 - authentication
+- WebSockets
 - PostgreSQL
-- ORM
-- Alembic
-- multi-gateway support
-- advanced retry automation
-- live dashboard updates
+- promotions
+- campaigns
+- stores
+- multi-gateway
 
+----
 
 ## Important Design Decisions
 
