@@ -6,11 +6,13 @@ from src.api.app import app
 
 def setup_function():
     init_db()
-    
+
     with get_connection() as conn:
         conn.execute("DELETE FROM commands")
         conn.execute("DELETE FROM products")
         conn.execute("DELETE FROM tags")
+        conn.execute("DELETE FROM shelf_locations")
+        conn.execute("DELETE FROM product_tag_shelf_assignments")
         conn.commit()
 #-----------------Unit testing-----------#
 client = TestClient(app)
@@ -172,4 +174,36 @@ def test_delete_command_archives_command():
 
     assert data["status"] == "archived"
     assert data["command"]["status"] == "archived"
+    
+def _create_assignment_test_data():
+    product_response = client.post(
+        "/products",
+        json={
+            "sku": "ASSIGN001",
+            "name": "Milk 1L",
+            "price": 29.0,
+        },
+    )
+    product_id = product_response.json()["productId"]
+
+    tag_response = client.post(
+        "/tags",
+        json={
+            "name": "TG_01",
+            "ble_address": "74:4D:BD:63:C2:C6",
+            "status": "available",
+        },
+    )
+    tag_id = tag_response.json()["tagId"]
+
+    shelf_response = client.post(
+        "/shelf-locations",
+        json={
+            "name": "Dairy A1",
+            "description": "Milk section",
+        },
+    )
+    shelf_location_id = shelf_response.json()["locationId"]
+
+    return product_id, tag_id, shelf_location_id
     

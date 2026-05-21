@@ -49,6 +49,34 @@ def init_db() -> None:
             """
         )
         
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS shelf_locations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                description TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+            """
+        )
+        
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS product_tag_shelf_assignments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                product_id INTEGER NOT NULL,
+                tag_id INTEGER NOT NULL,
+                shelf_location_id INTEGER NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (product_id) REFERENCES products(id),
+                FOREIGN KEY (tag_id) REFERENCES tags(id),
+                FOREIGN KEY (shelf_location_id) REFERENCES shelf_location(id)
+            )
+            """
+        )
+            
         conn.commit()
         
     
