@@ -9,6 +9,8 @@ def setup_function():
     
     with get_connection() as conn:
         conn.execute("DELETE FROM commands")
+        conn.execute("DELETE FROM products")
+        conn.execute("DELETE FROM tags")
         conn.commit()
 #-----------------Unit testing-----------#
 client = TestClient(app)
@@ -19,27 +21,52 @@ def test_health_endpoint_returns_ok():
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
     
-def test_get_tags_returns_known_tags():
+def test_get_tags_returns_created_tags():
+    create_response = client.post(
+        "/tags",
+        json={
+            "name": "TG_01",
+            "ble_address": "74:4D:BD:63:C2:C6",
+            "status": "available",
+        },
+    )
+
+    assert create_response.status_code == 200
+
     response = client.get("/tags")
-    
+
     assert response.status_code == 200
-    assert response.json() == [
-        {
-            "tagId": 1,
+
+    data = response.json()
+
+    assert len(data) == 1
+    assert data[0]["name"] == "TG_01"
+    assert data[0]["ble_address"] == "74:4D:BD:63:C2:C6"
+    assert data[0]["status"] == "available"
+
+
+def test_get_single_tag_returns_created_tag():
+    create_response = client.post(
+        "/tags",
+        json={
             "name": "TG_01",
-            "address": "74:4D:BD:63:C2:C6",
-        }
-    ]
-    
-def test_get_single_tag_returns_known_tag():
-    response = client.get("/tags/1")
-    
+            "ble_address": "74:4D:BD:63:C2:C6",
+            "status": "available",
+        },
+    )
+
+    tag_id = create_response.json()["tagId"]
+
+    response = client.get(f"/tags/{tag_id}")
+
     assert response.status_code == 200
-    assert response.json() == {
-            "tagId": 1,
-            "name": "TG_01",
-            "address": "74:4D:BD:63:C2:C6",
-    }
+
+    data = response.json()
+
+    assert data["id"] == tag_id
+    assert data["name"] == "TG_01"
+    assert data["ble_address"] == "74:4D:BD:63:C2:C6"
+    assert data["status"] == "available"
     
 def test_get_single_tag_returns_404_for_unknown_tag():
     response = client.get("/tags/999")

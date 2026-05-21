@@ -23,7 +23,34 @@ def init_db() -> None:
             """
         )
         
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS products (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                sku TEXT NOT NULL UNIQUE,
+                name TEXT NOT NULL,
+                price REAL NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+            """
+        )
+        
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                ble_address TEXT NOT NULL UNIQUE,
+                status TEXT NOT NULL DEFAULT 'available',
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+            """
+        )
+        
         conn.commit()
+        
     
 def _now() -> str:
     return datetime.now().isoformat(timespec="seconds")

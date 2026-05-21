@@ -50,8 +50,6 @@ def mark_stale_commands_failed(timeout_seconds: int) -> int:
     
     for command in stale_commands:
         
-        increment_retry_count(command["command_id"])
-        
         updated = update_command_status(
             command["command_id"], "failed"
         )

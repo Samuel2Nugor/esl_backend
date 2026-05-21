@@ -216,7 +216,7 @@ def test_mark_stale_commands_failed():
     
     assert updated_count == 1
     assert command["status"] == "failed"
-    assert command["retry_count"] == 1
+    assert command["retry_count"] == 0
     
 def test_save_command_sets_retry_count_to_zero():
     payload = {

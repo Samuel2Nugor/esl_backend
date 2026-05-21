@@ -32,7 +32,7 @@ def test_command_lifecycle_published_then_failed_after_timeout():
     assert published is True
     assert failed_count == 1
     assert command["status"] == "failed"
-    assert command["retry_count"] == 1
+    assert command["retry_count"] == 0
     
 def test_command_lifecycle_then_ack_received():
     payload = {
@@ -69,5 +69,5 @@ def test_command_monitor_marks_stale_commands_failed():
     
     assert updated_count == 1
     assert command["status"] == "failed"
-    assert command["retry_count"] == 1
+    assert command["retry_count"] == 0
     
