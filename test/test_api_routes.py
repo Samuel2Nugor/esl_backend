@@ -23,6 +23,19 @@ def test_health_endpoint_returns_ok():
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
     
+def _create_test_tag():
+    response = client.post(
+        "/tags",
+         json={
+            "name": "TG_01",
+            "ble_address": "74:4D:BD:63:C2:C6",
+            "status": "available",
+        },
+    )
+    assert response.status_code == 200
+    return response.json()["tagId"]
+        
+    
 def test_get_tags_returns_created_tags():
     create_response = client.post(
         "/tags",
@@ -85,11 +98,13 @@ def test_get_commands_returns_empty_list_when_no_commands():
     assert response.json() == []
     
 def test_post_commands_creates_commands():
+    tag_id = _create_test_tag()
+    
     with patch("src.services.command_service.publish_payload"):
         response = client.post(
             "/commands",
             json={
-                "tagId": 1,
+                "tagId": tag_id,
                 "title":"Coffee",
                 "finalPrice": 39.00,
             },
@@ -103,11 +118,13 @@ def test_post_commands_creates_commands():
     assert isinstance(data["commandId"], int)
     
 def test_get_single_command_returns_command():
+    tag_id = _create_test_tag()
+    
     with patch("src.services.command_service.publish_payload"):
         create_response = client.post(
             "/commands",
             json={
-                "tagId": 1,
+                "tagId": tag_id,
                 "title":"Milk 1L",
                 "finalPrice": 29.00,
             },
@@ -121,16 +138,18 @@ def test_get_single_command_returns_command():
     data = response.json()
     
     assert data["command_id"] == command_id
-    assert data["tagId"] == 1
+    assert data["tagId"] == tag_id
     assert data["title"] == "Milk 1L"
     assert data["finalPrice"] == 29.00
     
 def test_patch_command_updates_status():
+    tag_id = _create_test_tag()
+    
     with patch("src.services.command_service.publish_payload"):
         create_response = client.post(
             "/commands",
             json={
-                "tagId": 1,
+                "tagId": tag_id,
                 "title": "Coffee",
                 "finalPrice": 39.00,
             },
@@ -154,11 +173,13 @@ def test_patch_command_updates_status():
 
 
 def test_delete_command_archives_command():
+    tag_id = _create_test_tag()
+    
     with patch("src.services.command_service.publish_payload"):
         create_response = client.post(
             "/commands",
             json={
-                "tagId": 1,
+                "tagId": tag_id,
                 "title": "Coffee",
                 "finalPrice": 39.00,
             },
