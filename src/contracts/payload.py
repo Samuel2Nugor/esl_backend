@@ -1,12 +1,13 @@
-from src.config import BackendConfig
 
 
+# Contract
 
-def build_payload(config: BackendConfig) -> dict:
+def build_payload(command_id: int, tag_id: int, title: str, final_price: float) -> dict:
     return {
-        "tagId": config.tag_id,
-        "title": config.title,
-        "finalPrice": config.final_price,
+        "commandId": command_id,
+        "tagId": tag_id,
+        "title": title,
+        "finalPrice": final_price,
     }
     
 def validate_payload(payload: dict) -> bool:
@@ -19,13 +20,13 @@ def validate_payload(payload: dict) -> bool:
     if not isinstance(payload["commandId"], int):
         return False
             
-    if not isinstance(payload["tagId"], (int, str)):
+    if not isinstance(payload["tagId"], int):
         return False
     
     if not isinstance(payload["title"], str):
         return False
         
-    if not isinstance(payload["finalPrice"], (int, float)):
+    if not isinstance(payload["finalPrice"], (float, int)):
         return False
         
     return True
