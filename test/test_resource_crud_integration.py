@@ -56,8 +56,8 @@ def test_product_crud_lifecycle():
 def test_tag_crud_lifecycle():
 
     tag = {
-        "name": "TG_01",
-        "ble_address": "74:4D:BD:63:C2:C6",
+        "name": "TEST_TG_01",
+        "ble_address": "74:4D:BD:63:C2:AA",
         "status": "available",
     }
 
@@ -65,20 +65,20 @@ def test_tag_crud_lifecycle():
 
     created = get_tag(tag_id)
 
-    assert created["name"] == "TG_01"
+    assert created["name"] == "TEST_TG_01"
 
     update_tag(
         tag_id,
         {
-            "name": "TG_02",
-            "ble_address": "74:4D:BD:63:C2:C7",
+            "name": "TEST_TG_02",
+            "ble_address": "74:4D:BD:63:C2:AB",
             "status": "available",
         },
     )
 
     updated = get_tag(tag_id)
 
-    assert updated["name"] == "TG_02"
+    assert updated["name"] == "TEST_TG_02"
 
     deleted = delete_tag(tag_id)
 

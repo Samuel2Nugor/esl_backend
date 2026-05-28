@@ -3,12 +3,18 @@ from src.contracts.payload import build_payload, validate_payload, validate_ack_
 
 def test_build_payload_returns_gateway_contract():
     config = BackendConfig()
-    payload = build_payload(config)
+    payload = build_payload(
+        command_id=1,
+        tag_id=1,
+        title="Milk 1L",
+        final_price=29.00,
+    )
 
     assert payload == {
-        "tagId": config.tag_id,
-        "title": config.title,
-        "finalPrice": config.final_price,
+        "commandId": 1,
+        "tagId": 1,
+        "title": "Milk 1L",
+        "finalPrice": 29.00,
     }
     
 def test_validate_payload_accepts_valid_payload():
