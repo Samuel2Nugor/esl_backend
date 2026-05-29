@@ -15,7 +15,7 @@ def _row_to_shelf_location(row) -> dict:
 
 def insert_shelf_location(location: dict) -> int:
     now = _now()
-    
+
     with get_connection() as conn:
         cursor = conn.execute(
             """
@@ -34,10 +34,11 @@ def insert_shelf_location(location: dict) -> int:
                 now,
             ),
         )
-        
+
         conn.commit()
         return cursor.lastrowid
-        
+
+
 def find_shelf_location_by_id(location_id: int) -> dict | None:
     with get_connection() as conn:
         row = conn.execute(
@@ -48,23 +49,25 @@ def find_shelf_location_by_id(location_id: int) -> dict | None:
             """,
             (location_id,),
         ).fetchone()
-        
+
     if row is None:
         return None
-            
+
     return _row_to_shelf_location(row)
-    
+
+
 def list_shelf_locations() -> list[dict]:
-    with get-connection() as conn:
+    with get_connection() as conn:
         rows = conn.execute(
-            """"
+            """
             SELECT id, name, description, created_at, updated_at
             FROM shelf_locations
             """
         ).fetchall()
-        
+
     return [_row_to_shelf_location(row) for row in rows]
-    
+
+
 def update_shelf_location(location_id: int, location: dict) -> bool:
     with get_connection() as conn:
         cursor = conn.execute(
@@ -80,10 +83,11 @@ def update_shelf_location(location_id: int, location: dict) -> bool:
                 location_id,
             ),
         )
-        
+
         conn.commit()
         return cursor.rowcount > 0
-        
+
+
 def delete_shelf_location(location_id: int) -> bool:
     with get_connection() as conn:
         cursor = conn.execute(
@@ -93,7 +97,6 @@ def delete_shelf_location(location_id: int) -> bool:
             """,
             (location_id,),
         )
-        
+
         conn.commit()
         return cursor.rowcount > 0
-    
